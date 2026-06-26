@@ -335,6 +335,16 @@ async function startNetworkAndEnterApp() {
     toggleScreen("app");
     await invoke("start_network");
     await refreshContacts();
+
+    try {
+      const port = await invoke("get_network_port");
+      const label = document.querySelector("#self-profile-badge .profile-label");
+      if (label) {
+        label.innerText = `My Device (Port: ${port})`;
+      }
+    } catch (e) {
+      console.warn("Failed to get network port", e);
+    }
   } catch (err) {
     showError("Failed to start network client: " + err);
   }
@@ -380,18 +390,36 @@ function setupDomEventListeners() {
   document.getElementById("btn-add-contact").addEventListener("click", async () => {
     const nameInput = document.getElementById("input-contact-name");
     const tokenInput = document.getElementById("input-contact-token");
+    const portInput = document.getElementById("input-contact-port");
+    
     const name = nameInput.value.trim();
     const token = tokenInput.value.trim();
+    const portVal = portInput ? portInput.value.trim() : "";
     
     if (!name || !token) {
-      showError("Please fill in both fields");
+      showError("Please fill in Name and Token");
       return;
     }
     
     try {
       await invoke("add_contact_token", { token_str: token, display_name: name });
+      
+      if (portVal) {
+        const portNum = parseInt(portVal, 10);
+        if (!isNaN(portNum)) {
+          const pubKey = await invoke("parse_token", { token_str: token });
+          await invoke("inject_peer_address", {
+            peer_pub_key: pubKey,
+            ip: "127.0.0.1",
+            port: portNum
+          });
+          console.log(`Manually injected loopback address 127.0.0.1:${portNum} for contact ${name}`);
+        }
+      }
+      
       nameInput.value = "";
       tokenInput.value = "";
+      if (portInput) portInput.value = "";
       await refreshContacts();
     } catch (err) {
       showError("Failed to add contact: " + err);

@@ -196,6 +196,28 @@ async fn get_messages(
         .collect())
 }
 
+#[tauri::command(rename_all = "snake_case")]
+async fn inject_peer_address(
+    state: tauri::State<'_, AppState>,
+    peer_pub_key: Vec<u8>,
+    ip: String,
+    port: u16,
+) -> Result<(), String> {
+    state.engine.inject_peer_address(peer_pub_key, ip, port).map_err(|e| e.to_string())
+}
+
+#[tauri::command]
+async fn get_network_port(state: tauri::State<'_, AppState>) -> Result<u16, String> {
+    state.engine.get_network_port().map_err(|e| e.to_string())
+}
+
+#[tauri::command(rename_all = "snake_case")]
+fn parse_token(token_str: String) -> Result<Vec<u8>, String> {
+    use loom_core::token::LoomToken;
+    let token = LoomToken::parse(&token_str).map_err(|e| e.to_string())?;
+    Ok(token.identity_key.to_vec())
+}
+
 fn main() {
     tauri::Builder::default()
         .setup(|app| {
@@ -241,7 +263,10 @@ fn main() {
             start_network,
             initiate_chat_handshake,
             send_message,
-            get_messages
+            get_messages,
+            inject_peer_address,
+            get_network_port,
+            parse_token
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
