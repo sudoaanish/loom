@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Loom Secure Chat</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script type="module" src="main.js" defer></script>
+</head>
+<body>
+  <!-- Animated Radial-Gradient Blobs -->
+  <div class="bg-blobs">
+    <div class="blob blob-teal"></div>
+    <div class="blob blob-violet"></div>
+    <div class="blob blob-rose"></div>
+  </div>
+
+  <div id="main-container">
+    <!-- 1. Onboarding Screen -->
+    <div id="onboarding-screen" class="glass-panel screen-panel hidden">
+      <h1 class="font-outfit">Loom</h1>
+      <p class="subtitle">Secure, offline, local-first communication</p>
+      
+      <div id="onboarding-setup-view">
+        <p class="description">Generate a local cryptographic identity to begin peer discovery and encrypted messaging.</p>
+        <button id="btn-generate-id" class="glass-button">Generate New Identity</button>
+      </div>
+
+      <div id="onboarding-display-view" class="hidden">
+        <p class="success-banner">Identity generated successfully!</p>
+        <div class="qr-box">
+          <canvas id="canvas-my-qr" width="180" height="180"></canvas>
+        </div>
+        <div class="token-display">
+          <label>Your Loom Token</label>
+          <div class="copy-input-group">
+            <input type="text" id="input-my-token" class="glass-input" readonly>
+            <button id="btn-copy-token" class="glass-button">Copy</button>
+          </div>
+        </div>
+        <button id="btn-enter-client" class="glass-button">Start Loom Client</button>
+      </div>
+    </div>
+
+    <!-- 2. Main App Screen -->
+    <div id="app-screen" class="screen-panel hidden">
+      <!-- Left Sidebar (Frosted Glass Panel) -->
+      <aside id="app-sidebar" class="glass-panel">
+        <header class="sidebar-header">
+          <h2 class="font-outfit">Loom Network</h2>
+          <div id="self-profile-badge">
+            <span class="online-indicator"></span>
+            <span class="profile-label">My Device</span>
+            <button id="btn-show-modal-qr" class="icon-button" title="Show QR Code">🔲</button>
+          </div>
+        </header>
+
+        <!-- Add Contact Section -->
+        <section class="sidebar-group">
+          <h3>Add New Contact</h3>
+          <div class="form-vertical">
+            <input type="text" id="input-contact-name" class="glass-input" placeholder="Display Name">
+            <div class="input-action-row">
+              <input type="text" id="input-contact-token" class="glass-input" placeholder="Paste LOOM-token...">
+              <button id="btn-add-contact" class="glass-button">Add</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- Contacts Section -->
+        <section class="sidebar-group scroll-y flex-grow">
+          <h3>Contacts</h3>
+          <ul id="list-contacts" class="list-reset">
+            <!-- Populated via Javascript -->
+          </ul>
+        </section>
+
+        <!-- Discovered Peers (mDNS) Section -->
+        <section class="sidebar-group scroll-y">
+          <h3>Discovered Peers (mDNS)</h3>
+          <ul id="list-discovered-peers" class="list-reset">
+            <!-- Populated via Javascript -->
+          </ul>
+        </section>
+      </aside>
+
+      <!-- Right Chat Conversation Panel -->
+      <main id="chat-panel" class="glass-panel">
+        <!-- Default State: No Selected Chat -->
+        <div id="chat-fallback" class="panel-placeholder">
+          <p>Select a contact or a discovered peer to begin secure communication.</p>
+        </div>
+
+        <!-- Active Chat Window -->
+        <div id="chat-active-container" class="hidden">
+          <header class="chat-header">
+            <div class="chat-title-info">
+              <h2 id="chat-contact-name" class="font-outfit">Contact Name</h2>
+              <div class="chat-status-wrapper">
+                <span id="chat-status-dot" class="status-dot offline"></span>
+                <span id="chat-status-text">No Secure Session</span>
+              </div>
+            </div>
+            <button id="btn-chat-handshake" class="glass-button">Initiate Handshake</button>
+          </header>
+
+          <!-- Chat Message Feed -->
+          <div id="chat-message-feed" class="message-feed scroll-y">
+            <!-- Dynamically populated -->
+          </div>
+
+          <!-- Message Input Area -->
+          <footer class="chat-footer">
+            <input type="text" id="input-chat-message" class="glass-input" placeholder="Type an encrypted message..." disabled>
+            <button id="btn-chat-send" class="glass-button" disabled>Send</button>
+          </footer>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- QR Code Modal (Overlay) -->
+  <div id="qr-modal" class="modal-overlay hidden">
+    <div class="glass-panel modal-content">
+      <h3 class="font-outfit">My Identity Token</h3>
+      <div class="qr-box">
+        <canvas id="canvas-modal-qr" width="180" height="180"></canvas>
+      </div>
+      <p id="label-modal-token" class="token-text-small"></p>
+      <button id="btn-close-modal" class="glass-button">Close</button>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,11 @@
+# Rust build directories
+/target/
+/src-tauri/target/
+
+# Database files
+*.db
+*.db-journal
+
+# OS files
+.DS_Store
+Thumbs.db

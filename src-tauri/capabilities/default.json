@@ -1,0 +1,15 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "default",
+  "description": "Default permissions for Loom Desktop Client",
+  "platforms": [
+    "windows",
+    "macOS",
+    "linux"
+  ],
+  "permissions": [
+    "core:default",
+    "core:event:default",
+    "core:path:default"
+  ]
+}

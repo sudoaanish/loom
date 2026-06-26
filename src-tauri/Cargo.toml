@@ -1,0 +1,18 @@
+[package]
+name = "loom-backend"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "loom_lib"
+crate-type = ["staticlib", "cdylib", "lib"]
+
+[dependencies]
+tauri = { version = "2.0", features = [] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+loom-core = { path = "../crates/loom-core" }
+tokio = { version = "1", features = ["full"] }
+
+[build-dependencies]
+tauri-build = { version = "2.0", features = [] }
