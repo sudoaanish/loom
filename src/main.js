@@ -521,10 +521,10 @@ async function setupTauriListeners() {
 
 // Initialize Application
 async function initializeApp() {
-  setupDomEventListeners();
-  await setupTauriListeners();
-  
   try {
+    setupDomEventListeners();
+    await setupTauriListeners();
+    
     const hasIdentity = await invoke("has_identity");
     if (hasIdentity) {
       State.myToken = await invoke("get_my_token");
@@ -533,8 +533,8 @@ async function initializeApp() {
       toggleScreen("onboarding-setup");
     }
   } catch (err) {
-    // If not running inside Tauri (e.g. standard browser), fallback to onboarding-setup screen
-    console.warn("Tauri environment not detected, falling back to mock onboarding", err);
+    // If not running inside Tauri (e.g. standard browser) or initialization fails, fallback
+    console.error("Initialization failed, falling back to mock onboarding:", err);
     toggleScreen("onboarding-setup");
   }
 }

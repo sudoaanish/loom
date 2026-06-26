@@ -9,24 +9,113 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
   <script>
-    window.onerror = function(message, source, lineno, colno, error) {
-      const errDiv = document.createElement("div");
-      errDiv.style.position = "fixed";
-      errDiv.style.top = "0";
-      errDiv.style.left = "0";
-      errDiv.style.width = "100%";
-      errDiv.style.background = "rgba(255, 0, 0, 0.95)";
-      errDiv.style.color = "white";
-      errDiv.style.padding = "20px";
-      errDiv.style.zIndex = "999999";
-      errDiv.style.fontFamily = "monospace";
-      errDiv.style.whiteSpace = "pre-wrap";
-      errDiv.style.fontSize = "14px";
-      errDiv.style.lineHeight = "1.5";
-      errDiv.innerText = "JS ERROR:\n" + message + "\n\nSource: " + source + "\nLine: " + lineno + ":" + colno + "\n\nStack:\n" + (error ? error.stack : "");
-      document.documentElement.appendChild(errDiv);
-      return false;
-    };
+    (function() {
+      const logs = [];
+      let container = null;
+
+      function createConsoleOverlay() {
+        if (container) return;
+        container = document.createElement("div");
+        container.id = "diagnostic-console";
+        container.style.position = "fixed";
+        container.style.bottom = "0";
+        container.style.left = "0";
+        container.style.width = "100%";
+        container.style.height = "250px";
+        container.style.background = "rgba(10, 10, 15, 0.95)";
+        container.style.color = "#E0E0E6";
+        container.style.borderTop = "2px solid rgba(255, 255, 255, 0.15)";
+        container.style.fontFamily = "monospace";
+        container.style.fontSize = "12px";
+        container.style.zIndex = "999999";
+        container.style.display = "flex";
+        container.style.flexDirection = "column";
+        container.style.boxSizing = "border-box";
+
+        const header = document.createElement("div");
+        header.style.background = "rgba(20, 20, 30, 0.95)";
+        header.style.padding = "6px 12px";
+        header.style.borderBottom = "1px solid rgba(255, 255, 255, 0.1)";
+        header.style.display = "flex";
+        header.style.justifyContent = "space-between";
+        header.style.alignItems = "center";
+        header.style.fontWeight = "bold";
+        header.innerHTML = '<span style="color: #00E5FF;">Loom Diagnostic Console</span><button id="close-diagnostic" style="background:none; border:none; color:#FF5555; cursor:pointer; font-weight:bold; font-size:14px;">✕</button>';
+        
+        const logArea = document.createElement("div");
+        logArea.id = "diagnostic-log-area";
+        logArea.style.flex = "1";
+        logArea.style.overflowY = "auto";
+        logArea.style.padding = "10px";
+        logArea.style.whiteSpace = "pre-wrap";
+        logArea.style.lineHeight = "1.4";
+
+        container.appendChild(header);
+        container.appendChild(logArea);
+        document.body.appendChild(container);
+
+        document.getElementById("close-diagnostic").onclick = function() {
+          container.style.display = "none";
+        };
+
+        // Render any cached logs
+        logs.forEach(log => appendToOverlay(log.msg, log.color));
+      }
+
+      function appendToOverlay(msg, color) {
+        if (!container) {
+          logs.push({ msg, color });
+          return;
+        }
+        const logArea = document.getElementById("diagnostic-log-area");
+        if (logArea) {
+          const entry = document.createElement("div");
+          entry.style.color = color || "#E0E0E6";
+          entry.style.borderBottom = "1px solid rgba(255, 255, 255, 0.05)";
+          entry.style.paddingBottom = "3px";
+          entry.style.marginBottom = "3px";
+          entry.innerText = `[${new Date().toLocaleTimeString()}] ${msg}`;
+          logArea.appendChild(entry);
+          logArea.scrollTop = logArea.scrollHeight;
+        }
+      }
+
+      // Capture standard errors
+      window.onerror = function(message, source, lineno, colno, error) {
+        const errorMsg = `ERROR: ${message}\nSource: ${source}:${lineno}:${colno}\nStack: ${error ? error.stack : 'N/A'}`;
+        appendToOverlay(errorMsg, "#FF5555");
+        return false;
+      };
+
+      // Capture promise rejections
+      window.onunhandledrejection = function(event) {
+        const reason = event.reason;
+        const errorMsg = `UNHANDLED REJECTION: ${reason?.message || reason}\nStack: ${reason?.stack || 'N/A'}`;
+        appendToOverlay(errorMsg, "#FF5555");
+      };
+
+      // Intercept console functions
+      const originalLog = console.log;
+      const originalWarn = console.warn;
+      const originalError = console.error;
+
+      console.log = function(...args) {
+        originalLog.apply(console, args);
+        appendToOverlay(args.map(a => typeof a === 'object' ? JSON.stringify(a) : a).join(' '), "#E0E0E6");
+      };
+
+      console.warn = function(...args) {
+        originalWarn.apply(console, args);
+        appendToOverlay(args.map(a => typeof a === 'object' ? JSON.stringify(a) : a).join(' '), "#FFB86C");
+      };
+
+      console.error = function(...args) {
+        originalError.apply(console, args);
+        appendToOverlay(args.map(a => typeof a === 'object' ? JSON.stringify(a) : a).join(' '), "#FF5555");
+      };
+
+      window.addEventListener("DOMContentLoaded", createConsoleOverlay);
+    })();
   </script>
   <script type="module" src="main.js" defer></script>
 </head>
