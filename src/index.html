@@ -8,6 +8,26 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
+  <script>
+    window.onerror = function(message, source, lineno, colno, error) {
+      const errDiv = document.createElement("div");
+      errDiv.style.position = "fixed";
+      errDiv.style.top = "0";
+      errDiv.style.left = "0";
+      errDiv.style.width = "100%";
+      errDiv.style.background = "rgba(255, 0, 0, 0.95)";
+      errDiv.style.color = "white";
+      errDiv.style.padding = "20px";
+      errDiv.style.zIndex = "999999";
+      errDiv.style.fontFamily = "monospace";
+      errDiv.style.whiteSpace = "pre-wrap";
+      errDiv.style.fontSize = "14px";
+      errDiv.style.lineHeight = "1.5";
+      errDiv.innerText = "JS ERROR:\n" + message + "\n\nSource: " + source + "\nLine: " + lineno + ":" + colno + "\n\nStack:\n" + (error ? error.stack : "");
+      document.documentElement.appendChild(errDiv);
+      return false;
+    };
+  </script>
   <script type="module" src="main.js" defer></script>
 </head>
 <body>

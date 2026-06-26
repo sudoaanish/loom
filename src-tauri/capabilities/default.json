@@ -10,6 +10,15 @@
   "permissions": [
     "core:default",
     "core:event:default",
-    "core:path:default"
+    "core:path:default",
+    "allow-has-identity",
+    "allow-generate-new-identity",
+    "allow-get-my-token",
+    "allow-add-contact-token",
+    "allow-get-contacts",
+    "allow-start-network",
+    "allow-initiate-chat-handshake",
+    "allow-send-message",
+    "allow-get-messages"
   ]
 }
