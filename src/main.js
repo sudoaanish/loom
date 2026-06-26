@@ -487,6 +487,19 @@ function setupDomEventListeners() {
     document.getElementById("qr-modal").classList.remove("hidden");
   });
   
+  // Copy Modal Token
+  document.getElementById("btn-copy-modal-token").addEventListener("click", () => {
+    const tokenText = document.getElementById("label-modal-token").innerText;
+    navigator.clipboard.writeText(tokenText)
+      .then(() => {
+        const btn = document.getElementById("btn-copy-modal-token");
+        const originalText = btn.innerText;
+        btn.innerText = "Copied!";
+        setTimeout(() => btn.innerText = originalText, 2000);
+      })
+      .catch(err => showError("Failed to copy token: " + err));
+  });
+
   document.getElementById("btn-close-modal").addEventListener("click", () => {
     document.getElementById("qr-modal").classList.add("hidden");
   });

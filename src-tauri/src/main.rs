@@ -203,12 +203,24 @@ async fn inject_peer_address(
     ip: String,
     port: u16,
 ) -> Result<(), String> {
-    state.engine.inject_peer_address(peer_pub_key, ip, port).map_err(|e| e.to_string())
+    let engine = state.engine.clone();
+    tokio::task::spawn_blocking(move || {
+        engine.inject_peer_address(peer_pub_key, ip, port)
+    })
+    .await
+    .map_err(|e| e.to_string())?
+    .map_err(|e| e.to_string())
 }
 
 #[tauri::command]
 async fn get_network_port(state: tauri::State<'_, AppState>) -> Result<u16, String> {
-    state.engine.get_network_port().map_err(|e| e.to_string())
+    let engine = state.engine.clone();
+    tokio::task::spawn_blocking(move || {
+        engine.get_network_port()
+    })
+    .await
+    .map_err(|e| e.to_string())?
+    .map_err(|e| e.to_string())
 }
 
 #[tauri::command(rename_all = "snake_case")]
