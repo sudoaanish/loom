@@ -109,7 +109,7 @@ async fn get_my_token(state: tauri::State<'_, AppState>) -> Result<String, Strin
     state.engine.get_my_token().map_err(|e| e.to_string())
 }
 
-#[tauri::command]
+#[tauri::command(rename_all = "snake_case")]
 async fn add_contact_token(
     state: tauri::State<'_, AppState>,
     token_str: String,
@@ -148,7 +148,7 @@ async fn start_network(
     .map_err(|e| e.to_string())
 }
 
-#[tauri::command]
+#[tauri::command(rename_all = "snake_case")]
 async fn initiate_chat_handshake(
     state: tauri::State<'_, AppState>,
     contact_pub_key: Vec<u8>,
@@ -162,7 +162,7 @@ async fn initiate_chat_handshake(
     .map_err(|e| e.to_string())
 }
 
-#[tauri::command]
+#[tauri::command(rename_all = "snake_case")]
 async fn send_message(
     state: tauri::State<'_, AppState>,
     contact_pub_key: Vec<u8>,
@@ -177,7 +177,7 @@ async fn send_message(
     .map_err(|e| e.to_string())
 }
 
-#[tauri::command]
+#[tauri::command(rename_all = "snake_case")]
 async fn get_messages(
     state: tauri::State<'_, AppState>,
     contact_pub_key: Vec<u8>,
