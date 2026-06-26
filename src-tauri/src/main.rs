@@ -200,10 +200,12 @@ fn main() {
     tauri::Builder::default()
         .setup(|app| {
             let args: Vec<String> = std::env::args().collect();
-            let mut profile = None;
-            for i in 0..args.len() {
-                if (args[i] == "--profile" || args[i] == "-p") && i + 1 < args.len() {
-                    profile = Some(args[i + 1].clone());
+            let mut profile = std::env::var("LOOM_PROFILE").ok();
+            if profile.is_none() {
+                for i in 0..args.len() {
+                    if (args[i] == "--profile" || args[i] == "-p") && i + 1 < args.len() {
+                        profile = Some(args[i + 1].clone());
+                    }
                 }
             }
 
